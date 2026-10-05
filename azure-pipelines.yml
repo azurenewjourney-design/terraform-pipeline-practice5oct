@@ -3,14 +3,26 @@ parameters:
     displayName: Scan Cholbo
     type: boolean
     default: true
+  - name: ScanNahiCholbo
+    displayName: Scan Nahi Cholbo
+    type: boolean
+    default: false
   - name: PlanCholbo
     displayName: Plan Cholbo
     type: boolean
     default: true
+  - name: PlanNahiCholbo
+    displayName: Plan Nahi Cholbo
+    type: boolean
+    default: false
   - name: ApplyCholbo
     displayName: Apply Cholbo
     type: boolean
     default: true
+  - name: ApplyNahiCholbo
+    displayName: Apply Nahi Cholbo
+    type: boolean
+    default: false
 trigger: none
 pool: 
   name: Sep24-pool
