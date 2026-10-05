@@ -15,3 +15,8 @@ resource "azurerm_resource_group" "rg1" {
   name     = "pipeline-practice-rg1"
   location = "Central India"
 }
+
+resource "azurerm_resource_group" "rg2" {
+  name     = "pipeline-practice-rg2"
+  location = "Central India"
+}
