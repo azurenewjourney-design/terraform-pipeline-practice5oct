@@ -5,6 +5,12 @@ terraform {
       version = "5.8.0"
     }
   }
+  backend "azurerm" {
+    resource_group_name  = "lallulalji786"
+    storage_account_name = "storagelallulalji786"
+    container_name       = "lallulal"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
