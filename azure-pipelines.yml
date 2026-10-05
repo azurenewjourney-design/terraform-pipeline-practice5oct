@@ -1,0 +1,101 @@
+parameters:
+  - name: ScanCholbo
+    displayName: Scan Cholbo
+    type: boolean
+    default: true
+  - name: PlanCholbo
+    displayName: Plan Cholbo
+    type: boolean
+    default: true
+  - name: ApplyCholbo
+    displayName: Apply Cholbo
+    type: boolean
+    default: true
+trigger: none
+pool: 
+  name: Sep24-pool
+stages: 
+  - stage: Scan
+    displayName: Scan
+    condition: and(succeeded(), ${{ eq(parameters.ScanCholbo, true) }})
+    jobs: 
+      - job: TerraformScan
+        displayName: Terraform Scan
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'Terraform-practice23sep-serviceconn'
+            backendAzureRmOverrideSubscriptionID: 'eacc5e4e-04a0-479c-b82a-f5b2d1b21f47'
+            backendAzureRmResourceGroupName: 'lallulalji786'
+            backendAzureRmStorageAccountName: 'storagelallulalji786'
+            backendAzureRmContainerName: 'lallulal'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+  - stage: Plan
+    displayName: Terraform Plan
+    dependsOn: Scan
+    condition: and(succeeded(), ${{ eq(parameters.PlanCholbo, true) }})
+    jobs:
+      - job: TerraformPlan
+        displayName: Terraform Plan
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'Terraform-practice23sep-serviceconn'
+            backendAzureRmOverrideSubscriptionID: 'eacc5e4e-04a0-479c-b82a-f5b2d1b21f47'
+            backendAzureRmResourceGroupName: 'lallulalji786'
+            backendAzureRmStorageAccountName: 'storagelallulalji786'
+            backendAzureRmContainerName: 'lallulal'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            environmentServiceNameAzureRM: 'Terraform-practice23sep-serviceconn'
+            environmentAzureRmOverrideSubscriptionID: 'eacc5e4e-04a0-479c-b82a-f5b2d1b21f47'
+  - stage: ManualApproval
+    displayName: Manual Approval
+    dependsOn: Plan
+    condition: and(succeeded(), ${{ eq(parameters.PlanCholbo, true) }})
+    jobs:
+      - job: ManualApproval
+        displayName: Manual Approval
+        pool: server
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'azurenewjourney@gmail.com'
+            approvers: 'azurenewjourney@gmail.com'
+            instructions: 'need to check before procceding'
+            onTimeout: reject
+  - stage: TerraformApply
+    displayName: Terraform Apply
+    dependsOn: ManualApproval
+    condition: and(succeeded(), ${{ eq(parameters.ApplyCholbo, true) }})
+    jobs:
+      - job: TerraformApply
+        displayName: Terraform Apply
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'Terraform-practice23sep-serviceconn'
+            backendAzureRmOverrideSubscriptionID: 'eacc5e4e-04a0-479c-b82a-f5b2d1b21f47'
+            backendAzureRmResourceGroupName: 'lallulalji786'
+            backendAzureRmStorageAccountName: 'storagelallulalji786'
+            backendAzureRmContainerName: 'lallulal'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            environmentServiceNameAzureRM: 'Terraform-practice23sep-serviceconn'
+            environmentAzureRmOverrideSubscriptionID: 'eacc5e4e-04a0-479c-b82a-f5b2d1b21f47'
